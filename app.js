@@ -38,6 +38,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 
+var flash = require('connect-flash');
+app.use(flash());
+
+
 // passport config
 var Account = require('./models/account');
 passport.use(new LocalStrategy(Account.authenticate()));

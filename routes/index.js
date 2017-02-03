@@ -2,7 +2,9 @@ var express = require('express');
 var passport = require('passport');
 var Account = require('../models/account');
 var router = express.Router();
+var flash = require('connect-flash');
 
+router.use(flash());
 
 router.get('/', function (req, res) {
     res.render('index', { user: req.user });
@@ -12,10 +14,10 @@ router.get('/register', function (req, res) {
     res.render('register', {});
 });
 
-router.post('/register', function (req, res, next) {
-    Account.register(new Account({ username: req.body.username }), req.body.password, function (err, account) {
+router.post('/register', function(req, res, next) {
+    Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
         if (err) {
-            return res.render('register', { error: err.message });
+          return res.render('register', { error : err.message });
         }
 
         passport.authenticate('local')(req, res, function () {
@@ -34,9 +36,13 @@ router.get('/login', function (req, res) {
     res.render('login', { user: req.user });
 });
 
-router.post('/login', passport.authenticate('local'), function (req, res) {
-    res.redirect('/');
-});
+router.post('/login',
+    passport.authenticate('local', {
+        successRedirect: '/',
+       failureRedirect: '/',
+        failureFlash: true
+    })
+);
 
 router.get('/logout', function (req, res) {
     req.logout();
@@ -46,5 +52,6 @@ router.get('/logout', function (req, res) {
 router.get('/ping', function (req, res) {
     res.status(200).send("pong!");
 });
+
 
 module.exports = router;
